@@ -40,7 +40,7 @@ L'équipe 2 du cours de master TSM_MAchLeData intégrera un réentraînement con
 
 ### Mission Équipe 1 : HEIG-VD IAI
 
-**Accélération du développement** : L’équipe 1 doit garantir un processus favorisant une accélération du développement en automatisant les tâches répétitives, en mettant en place une infrastructure adaptée, en fournissant des ressources de calcul, et en établissant un onboarding efficace.
+**Accélération du développement** : L'équipe 1 doit garantir un processus favorisant une accélération du développement en automatisant les tâches répétitives, en mettant en place une infrastructure adaptée, en fournissant des ressources de calcul, et en établissant un onboarding efficace.
 
 **Amélioration de la qualité** : L'équipe 1 doit également veiller à l'amélioration de la qualité des modèles produits, en mettant en place des outils de suivi des performances, des tests automatisés, et en facilitant la reproductibilité des expériences.
 
@@ -59,7 +59,7 @@ L'équipe 2 du cours de master TSM_MAchLeData intégrera un réentraînement con
 Le projet vise à mettre en place une solution d'authentification biométrique par reconnaissance faciale et vocale, en intégrant une pipeline MLOps pour assurer un cycle de vie automatisé des modèles d'IA. Cette solution s'appuie sur une collaboration entre deux équipes:
 
 - L'équipe 1 (HEIG-VD IAI) pour établir un environnement Data Science de base avec une pipeline MLOps de niveau 2.
-- L'équipe 2 (TSM_MAchLeData) pour implémenter des fonctionnalités de réentraînement continu, portant la pipeline au niveau d’autonomie 3.
+- L'équipe 2 (TSM_MAchLeData) pour implémenter des fonctionnalités de réentraînement continu, portant la pipeline au niveau d'autonomie 3.
 
 ### Phases d'utilisation  
 
@@ -68,7 +68,7 @@ Le projet vise à mettre en place une solution d'authentification biométrique p
 3. Entraînement initial : Création d'un modèle de base pour la reconnaissance faciale et vocale.
 4. Déploiement : Mise en production de la première version du modèle pour l'authentification des utilisateurs.
 5. Authentification : Utilisation du modèle pour authentifier les utilisateurs en production.
-6. Collecte continue de données : Récupération continue de nouvelles données d'authentification pour enrichir l’entraînement.
+6. Collecte continue de données : Récupération continue de nouvelles données d'authentification pour enrichir l'entraînement.
 7. Réentraînement automatique : Amélioration continue du modèle en intégrant les nouvelles données (niveau 3).
 8. Surveillance et suivi des performances : Évaluation des performances en production et ajustements en fonction des résultats.
 
@@ -97,7 +97,7 @@ Les parties prenantes sont: équipes de Data Scientists, Data Engineer, Software
 ### Fonction Pipeline MLOps (Niveau 2)
 
 - Suivre les expériences de manière centralisée pour traçabilité
-- Automatiser l’entraînement des modèles pour simplifier le développement
+- Automatiser l'entraînement des modèles pour simplifier le développement
 - Assurer la reproductibilité des modèles grâce à un historique des expérimentations
 - Gérer et versionner les modèles pour une meilleure supervision
 - Réaliser des tests et validations automatiques pour fiabilité et stabilité
@@ -116,7 +116,7 @@ Les parties prenantes sont: équipes de Data Scientists, Data Engineer, Software
 
 - Authentifier les utilisateurs par reconnaissance faciale et vocale
 - Envoyer une vidéo pour vérification via une API
-- Recevoir la réponse de l’API pour confirmer ou refuser l’accès
+- Recevoir la réponse de l'API pour confirmer ou refuser l'accès
 - Ajouter un nouvel utilisateur pour permettre son authentification
 - Supprimer un utilisateur de la base de données
 
@@ -152,13 +152,15 @@ Les parties prenantes sont: équipes de Data Scientists, Data Engineer, Software
 
 ### Phases et Milestones
 
-. **Proposition de projet** : (Semaine 1) Proposition & validation du projet
-. **Choix des technologies** : (Semaine 3) Définition des besoins, choix des technologies
-. **Dév modèle et application** : (Semaine 7) Modèle de reconnaissance et application d'authentification
-. **Développement Aspect Pipeline** : (Semaine 7) Présentation réentraînement automatique
-. **Développement pipelines** : (Semaine 7) Pipelines MLOps fonctionnelles niveau 2
-. **Intégration et tests** : (Semaine 9) Intégration système, Pipeline niveau 3, validation et tests finaux
-. **Documentation et présentation** : (Semaine 10) Rapport et présentation finale
+| **Phase**                               | **Milestone** | **Description**                                          |
+|-----------------------------------------|-------------|----------------------------------------------------------|
+| **Proposition de projet**               | Semaine 1   | Proposition & validation du projet                        |
+| **Choix des technologies**              | Semaine 3   | Définition des besoins, choix des technologies            |
+| **Dév modèle et application**           | Semaine 7   | Modèle de reconnaissance et application d'authentification|
+| **Développement Aspect Pipeline**       | Semaine 7   | Présentation réentraînement automatique                   |
+| **Développement pipelines**             | Semaine 7   | Pipelines MLOps fonctionnelles niveau 2                   |
+| **Intégration et tests**                | Semaine 9   | Intégration système, Pipeline niveau 3, validation et tests finaux |
+| **Documentation et présentation**       | Semaine 10  | Rapport et présentation finale                            |
 
 ## 8. Flux d'actions principales
 
@@ -178,7 +180,29 @@ graph TD
 
 Chemin critique : `A -> B -> C4 -> E -> F -> G -> H`
 
-## 8. Diagramme de Gantt
+## 9. Diagramme de Gantt
+
+```mermaid
+gantt
+    title Diagramme de Gantt Simplifié - Phases du Projet MLOps
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d-%m
+
+    section Phase 0: 
+    Proposition de projet   :   p0, 2023-10-21,2023-10-29
+
+    section Phase 1: 
+    Choix des technologies                :   p1, 2023-10-29,2023-11-11
+
+    section Phase 2: 
+    Développement        :   p2, 2023-11-04,2023-12-02
+
+    section Phase 3: 
+    Intégration et tests                  :   p3, 2023-11-18,2023-12-16
+
+    section Phase 4: 
+    Rapport & Doc. :   p4, 2023-12-09,2023-12-16
+```
 
 ```mermaid
 gantt
@@ -219,16 +243,16 @@ gantt
 
 ### Équipe 1 : HEIG-VD IAI
 
-- Olivier D'Ancona : 👨‍💼 Chef de projet
-- Arnaud Maillard : 🛠️ Développeur Pipeline MLOps
+- 👨‍💼 Chef de projet
+- 🛠️ Développeur Pipeline MLOps
 
 ### Équipe 2 : Master TSM_MAchLeData
 
-- Olivier D'Ancona : 🤝 Coordination inter-équipes, Développeur Pipeline MLOps
-- Badr Boucherine : 🚀 Pipeline MLOps niveau 3
-- Géraud Silvestri : 💻 Développement application
-- Yann Zübrugg : 🧠 Développement modèle DL
-- Magali Egger : 📊 Analyse, rapport, intégration
+- 🤝 Coordination inter-équipes, Développeur Pipeline MLOps
+- 🚀 Pipeline MLOps niveau 3
+- 💻 Développement application
+- 🧠 Développement modèle DL
+- 📊 Analyse, rapport, intégration
 
 ## 11. Méthodes et outils de gestion
 
