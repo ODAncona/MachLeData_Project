@@ -189,19 +189,19 @@ gantt
     axisFormat  %d-%m
 
     section Phase 0: 
-    Proposition de projet   :   p0, 2023-10-21,2023-10-29
+    Proposition de projet   :   p0, 2024-10-21,2024-10-29
 
     section Phase 1: 
-    Choix des technologies                :   p1, 2023-10-29,2023-11-11
+    Choix des technologies                :   p1, 2024-10-29,2024-11-11
 
     section Phase 2: 
-    Développement        :   p2, 2023-11-04,2023-12-02
+    Développement        :   p2, 2024-11-04,2024-12-02
 
     section Phase 3: 
-    Intégration et tests                  :   p3, 2023-11-18,2023-12-16
+    Intégration et tests                  :   p3, 2024-11-18,2024-12-16
 
     section Phase 4: 
-    Rapport & Doc. :   p4, 2023-12-09,2023-12-16
+    Rapport & Doc. :   p4, 2024-12-09,2024-12-16
 ```
 
 ```mermaid
@@ -211,31 +211,31 @@ gantt
     axisFormat  %d-%m
 
     section Phase 0: Proposition de projet
-    Proposition de projet           :   p0, 2023-10-21,2023-10-27
-    Validation du projet            :   p0, 2023-10-28,2023-10-29
+    Proposition de projet           :   p0, 2024-10-21,2024-10-27
+    Validation du projet            :   p0, 2024-10-28,2024-10-29
 
     section Phase 1: Choix des technologies
-    Définition des besoins          :   p1, 2023-10-30,2023-11-04
-    Mise en place des outils        :   p1, 2023-10-30,2023-11-04
-    Choix des technologies          :   p2, 2023-10-30,2023-11-04
-    Choix aspect pipeline           :   p2, 2023-10-30,2023-11-11
+    Définition des besoins          :   p1, 2024-10-30,2024-11-04
+    Mise en place des outils        :   p1, 2024-10-30,2024-11-04
+    Choix des technologies          :   p2, 2024-10-30,2024-11-04
+    Choix aspect pipeline           :   p2, 2024-10-30,2024-11-11
 
     section Phase 2: Développement
-    Présentation Séminaire          :   p3, 2023-11-04,2023-11-18
-    Développement Aspect Pipeline   :   p3, 2023-11-04,2023-12-02
-    Développement Modèle            :   p3, 2023-11-04,2023-12-02
-    Développement Application       :   p3, 2023-11-04,2023-12-02
+    Présentation Séminaire          :   p3, 2024-11-04,2024-11-18
+    Développement Aspect Pipeline   :   p3, 2024-11-04,2024-12-02
+    Développement Modèle            :   p3, 2024-11-04,2024-12-02
+    Développement Application       :   p3, 2024-11-04,2024-12-02
 
     section Phase 3: Intégration
-    Intégration modèle pipelines       :   p4, 2023-11-18,2023-12-09
-    Intégration pipelines application  :   p4, 2023-11-18,2023-12-09
-    Intégration pipelines aspect       :   p4, 2023-11-18,2023-12-16
-    Tests finaux                        :   p4, 2023-11-18,2023-12-16
+    Intégration modèle pipelines       :   p4, 2024-11-18,2024-12-09
+    Intégration pipelines application  :   p4, 2024-11-18,2024-12-09
+    Intégration pipelines aspect       :   p4, 2024-11-18,2024-12-16
+    Tests finaux                        :   p4, 2024-11-18,2024-12-16
 
     section Phase 4: Finalisation
 
-    Documentation & rédaction rapport :   p5, 2023-12-09,2023-12-16
-    Présentation finale                :   p5, 2023-12-09,2023-12-16
+    Documentation & rédaction rapport :   p5, 2024-12-09,2024-12-16
+    Présentation finale                :   p5, 2024-12-09,2024-12-16
 
 ```
 
