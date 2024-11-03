@@ -4,7 +4,7 @@ title Sequence Diagram - DeleteUser
 actor Admin
 participant Application
 participant "MLOps Pipeline" as MLOpsPipeline
-database "Data Lake"
+database "DataLake"
 participant "Model Registry" as ModelRegistry
 participant "Deployment Service" as DeploymentService
 participant "Deployed Model" as Model

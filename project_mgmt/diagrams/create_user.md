@@ -5,7 +5,7 @@ actor User
 participant Application
 participant "S3 Storage" as S3Storage
 participant "MLOps Pipeline" as MLOpsPipeline
-database "Data Lake"
+database "DataLake"
 participant "Model Registry" as ModelRegistry
 participant "Deployment Service" as DeploymentService
 participant "Deployed Model" as Model
