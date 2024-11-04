@@ -260,7 +260,7 @@ tracking:
   ## @param tracking.auth.extraOverrides Add extra settings to the basic_auth.ini file
   ## @param tracking.auth.overridesConfigMap Name of a ConfigMap containing overrides to the basic_auth.ini file
   auth:
-    enabled: true
+    enabled: false
     username: user
     password: ""
     existingSecret: ""
@@ -486,7 +486,7 @@ tracking:
   service:
     ## @param tracking.service.type mlflow service type
     ##
-    type: LoadBalancer
+    type: NodePort
     ## @param tracking.service.ports.http mlflow service HTTP port
     ## @param tracking.service.ports.https mlflow service HTTPS port
     ##
@@ -499,8 +499,8 @@ tracking:
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
-      http: ""
-      https: ""
+      http: "30330"
+      https: "30330"
     ## @param tracking.service.clusterIP mlflow service Cluster IP
     ## e.g.:
     ## clusterIP: None
@@ -1309,7 +1309,7 @@ waitContainer:
 ## @param postgresql.primary.service.ports.postgresql PostgreSQL service port
 ##
 postgresql:
-  enabled: true
+  enabled: false
   auth:
     username: bn_mlflow
     password: ""
@@ -1340,17 +1340,18 @@ postgresql:
 ## @param externalDatabase.authDatabase Database name for the auth module (only if tracking.auth.enabled=true)
 ## @param externalDatabase.existingSecret Name of an existing secret resource containing the database credentials
 ## @param externalDatabase.existingSecretPasswordKey Name of an existing secret key containing the database credentials
-##
+
 externalDatabase:
   dialectDriver: "postgresql"
-  host: ""
+  host: "34.65.110.129"
   port: 5432
-  user: postgres
-  database: mlflow
-  authDatabase: mlflow_auth
-  password: ""
-  existingSecret: ""
-  existingSecretPasswordKey: "db-password"
+  user: "dbuser"                    
+  password: "postgres"              
+  database: "mlflow"                
+  authDatabase: ""                  
+  existingSecret: "cloudsql-db-credentials"
+  existingSecretPasswordKey: "DB_PASSWORD"
+
 ## @section MinIO&reg; chart parameters
 ## @extra minio For full list of MinIO&reg; values configurations please refere [here](https://github.com/bitnami/charts/tree/main/bitnami/minio)
 ##
@@ -1358,7 +1359,7 @@ minio:
   ## @param minio.enabled Enable/disable MinIO&reg; chart installation
   ## to be used as an objstore for Mlflow
   ##
-  enabled: true
+  enabled: false
   ## MinIO&reg; authentication parameters
   ##
   auth:
@@ -1431,10 +1432,11 @@ externalS3:
 ## @param externalGCS.existingSecretKey Key in the existing secret containing the application credentials (required when useCredentialsInSecret is true)
 ## @param externalGCS.serveArtifacts Whether artifact serving is enabled
 ##
+
 externalGCS:
-  bucket: ""
-  googleCloudProject: ""
-  useCredentialsInSecret: false
-  existingSecret: ""
-  existingSecretKey: ""
+  bucket: "bucket-faceaudioanalyser"
+  googleCloudProject: "mlops-faceaudioanalyser"
+  useCredentialsInSecret: true
+  existingSecret: "gcs-credentials"
+  existingSecretKey: "credentials.json"
   serveArtifacts: true
