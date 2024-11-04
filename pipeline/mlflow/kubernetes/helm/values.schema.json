@@ -403,6 +403,16 @@
                                     }
                                 }
                             }
+                        },
+                        "seccompProfile": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Set container's Security Context seccomp profile",
+                                    "default": "RuntimeDefault"
+                                }
+                            }
                         }
                     }
                 },
@@ -1392,6 +1402,16 @@
                                     }
                                 }
                             }
+                        },
+                        "seccompProfile": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Set Run container's Security Context seccomp profile",
+                                    "default": "RuntimeDefault"
+                                }
+                            }
                         }
                     }
                 },
@@ -1857,6 +1877,16 @@
                                     }
                                 }
                             }
+                        },
+                        "seccompProfile": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Set container's Security Context seccomp profile",
+                                    "default": "RuntimeDefault"
+                                }
+                            }
                         }
                     }
                 }
@@ -1925,6 +1955,12 @@
         "externalDatabase": {
             "type": "object",
             "properties": {
+                "dialectDriver": {
+                    "type": "string",
+                    "description": "Database dialect(+driver)",
+                    "default": "postgresql",
+                    "pattern": "^(mysql|mssql|sqlite|postgresql)(\\+\\w+)?$"
+                },
                 "host": {
                     "type": "string",
                     "description": "Database host",
