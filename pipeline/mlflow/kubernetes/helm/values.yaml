@@ -9,7 +9,8 @@
 
 ## @param global.imageRegistry Global Docker image registry
 ## @param global.imagePullSecrets Global Docker registry secret names as an array
-## @param global.storageClass Global StorageClass for Persistent Volume(s)
+## @param global.defaultStorageClass Global default StorageClass for Persistent Volume(s)
+## @param global.storageClass DEPRECATED: use global.defaultStorageClass instead
 ##
 global:
   imageRegistry: ""
@@ -18,6 +19,7 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
+  defaultStorageClass: ""
   storageClass: ""
   ## Compatibility adaptations for Kubernetes platforms
   ##
@@ -85,10 +87,9 @@ diagnosticMode:
 image:
   registry: docker.io
   repository: bitnami/mlflow
-  tag: 2.12.2-debian-12-r1
+  tag: 2.17.2-debian-12-r0
   digest: ""
   ## Specify a imagePullPolicy
-  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
   ##
   pullPolicy: IfNotPresent
@@ -115,7 +116,7 @@ image:
 gitImage:
   registry: docker.io
   repository: bitnami/git
-  tag: 2.45.0-debian-12-r3
+  tag: 2.47.0-debian-12-r1
   digest: ""
   pullPolicy: IfNotPresent
   ## Optionally specify an array of imagePullSecrets.
@@ -197,7 +198,7 @@ tracking:
   ## @param tracking.resourcesPreset Set container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if tracking.resources is set (tracking.resources is recommended for production).
   ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
   ##
-  resourcesPreset: "small"
+  resourcesPreset: "medium"
   ## @param tracking.resources Set container requests and limits for different resources like CPU or memory (essential for production workloads)
   ## Example:
   ## resources:
@@ -218,7 +219,7 @@ tracking:
   ## @param tracking.podSecurityContext.fsGroup Set mlflow pod's Security Context fsGroup
   ##
   podSecurityContext:
-    enabled: false
+    enabled: true
     fsGroupChangePolicy: Always
     sysctls: []
     supplementalGroups: []
@@ -231,13 +232,13 @@ tracking:
   ## @param tracking.containerSecurityContext.runAsGroup Set containers' Security Context runAsGroup
   ## @param tracking.containerSecurityContext.privileged Set containers' Security Context privileged
   ## @param tracking.containerSecurityContext.runAsNonRoot Set containers' Security Context runAsNonRoot
-  ## @param tracking.containerSecurityContext.readOnlyRootFilesystem Set containers' Security Context runAsNonRoot
+  ## @param tracking.containerSecurityContext.readOnlyRootFilesystem Set containers' Security Context readOnlyRootFilesystem
   ## @param tracking.containerSecurityContext.allowPrivilegeEscalation Set container's privilege escalation
   ## @param tracking.containerSecurityContext.capabilities.drop Set container's Security Context runAsNonRoot
   ## @param tracking.containerSecurityContext.seccompProfile.type Set container's Security Context seccomp profile
   ##
   containerSecurityContext:
-    enabled: false
+    enabled: true
     seLinuxOptions: {}
     runAsUser: 1001
     runAsGroup: 1001
@@ -248,7 +249,7 @@ tracking:
     capabilities:
       drop: ["ALL"]
     seccompProfile:
-    #  type: "None"
+      type: "RuntimeDefault"
   ## Basic authentication
   ## @param tracking.auth.enabled Enable basic authentication
   ## @param tracking.auth.username Admin username
@@ -332,8 +333,8 @@ tracking:
   ## @param tracking.pdb.maxUnavailable Maximum number/percentage of pods that may be made unavailable
   ##
   pdb:
-    create: false
-    minAvailable: "1"
+    create: true
+    minAvailable: ""
     maxUnavailable: ""
   ## Autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
@@ -485,7 +486,7 @@ tracking:
   service:
     ## @param tracking.service.type mlflow service type
     ##
-    type: ClusterIP
+    type: LoadBalancer
     ## @param tracking.service.ports.http mlflow service HTTP port
     ## @param tracking.service.ports.https mlflow service HTTPS port
     ##
@@ -546,13 +547,13 @@ tracking:
   ingress:
     ## @param tracking.ingress.enabled Enable ingress record generation for mlflow
     ##
-    enabled: true
+    enabled: false
     ## @param tracking.ingress.pathType Ingress path type
     ##
     pathType: ImplementationSpecific
     ## @param tracking.ingress.hostname Default host for the ingress record
     ##
-    hostname: ""
+    hostname: mlflow.local
     ## @param tracking.ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
     ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
     ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -578,7 +579,7 @@ tracking:
     ##   - Rely on cert-manager to create it by setting the corresponding annotations
     ##   - Rely on Helm to create self-signed certificates by setting `ingress.selfSigned=true`
     ##
-    tls: true
+    tls: false
     ## @param tracking.ingress.selfSigned Create a TLS secret for this ingress record using self-signed certificates generated by Helm
     ##
     selfSigned: false
@@ -857,50 +858,6 @@ run:
   ## @param run.terminationGracePeriodSeconds Run termination grace period (in seconds)
   ##
   terminationGracePeriodSeconds: ""
-  ## Configure extra options for Run containers' liveness, readiness and startup probes
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
-  ## @param run.livenessProbe.enabled Enable livenessProbe on Run nodes
-  ## @param run.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param run.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param run.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param run.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param run.livenessProbe.successThreshold Success threshold for livenessProbe
-  ##
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 30
-    timeoutSeconds: 20
-    failureThreshold: 5
-    successThreshold: 1
-  ## @param run.readinessProbe.enabled Enable readinessProbe on Run nodes
-  ## @param run.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param run.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param run.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param run.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param run.readinessProbe.successThreshold Success threshold for readinessProbe
-  ##
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 30
-    timeoutSeconds: 20
-    failureThreshold: 5
-    successThreshold: 1
-  ## @param run.startupProbe.enabled Enable startupProbe on Run containers
-  ## @param run.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-  ## @param run.startupProbe.periodSeconds Period seconds for startupProbe
-  ## @param run.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param run.startupProbe.failureThreshold Failure threshold for startupProbe
-  ## @param run.startupProbe.successThreshold Success threshold for startupProbe
-  ##
-  startupProbe:
-    enabled: false
-    initialDelaySeconds: 5
-    periodSeconds: 30
-    timeoutSeconds: 5
-    failureThreshold: 5
-    successThreshold: 1
   ## @param run.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -936,7 +893,7 @@ run:
   ## @param run.podSecurityContext.fsGroup Set Run pod's Security Context fsGroup
   ##
   podSecurityContext:
-    enabled: false
+    enabled: true
     fsGroupChangePolicy: Always
     sysctls: []
     supplementalGroups: []
@@ -955,7 +912,7 @@ run:
   ## @param run.containerSecurityContext.seccompProfile.type Set Run container's Security Context seccomp profile
   ##
   containerSecurityContext:
-    enabled: false
+    enabled: true
     seLinuxOptions: {}
     runAsUser: 1001
     runAsGroup: 1001
@@ -966,7 +923,7 @@ run:
     capabilities:
       drop: ["ALL"]
     seccompProfile:
-    #  type: "None"
+      type: "RuntimeDefault"
   ## @param run.lifecycleHooks for the run container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
@@ -1252,7 +1209,7 @@ volumePermissions:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 12-debian-12-r21
+    tag: 12-debian-12-r32
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
@@ -1289,7 +1246,7 @@ volumePermissions:
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
   ##
   containerSecurityContext:
-    enabled: false
+    enabled: true
     seLinuxOptions: {}
     runAsUser: 0
 waitContainer:
@@ -1301,7 +1258,7 @@ waitContainer:
   image:
     registry: docker.io
     repository: bitnami/os-shell
-    tag: 12-debian-12-r21
+    tag: 12-debian-12-r32
     digest: ""
     ## @param waitContainer.image.pullPolicy Init container wait-container image pull policy
     ##
@@ -1329,7 +1286,7 @@ waitContainer:
   ## @param waitContainer.containerSecurityContext.seccompProfile.type Set container's Security Context seccomp profile
   ##
   containerSecurityContext:
-    enabled: false
+    enabled: true
     seLinuxOptions: {}
     runAsUser: 1001
     runAsGroup: 1001
@@ -1340,7 +1297,7 @@ waitContainer:
     capabilities:
       drop: ["ALL"]
     seccompProfile:
-    #  type: "None"
+      type: "RuntimeDefault"
 ## @section PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
 ## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
@@ -1374,6 +1331,7 @@ postgresql:
           PGPASSWORD=$POSTGRES_POSTGRES_PASSWORD psql -U postgres <<< "ALTER DATABASE {{ include "mlflow.v0.database-auth.name" . }} OWNER TO {{ .Values.auth.username }}"
 ## @section External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
+## @param externalDatabase.dialectDriver Database Dialect(+Driver)
 ## @param externalDatabase.host Database host
 ## @param externalDatabase.port Database port number
 ## @param externalDatabase.user Non-root username
@@ -1384,6 +1342,7 @@ postgresql:
 ## @param externalDatabase.existingSecretPasswordKey Name of an existing secret key containing the database credentials
 ##
 externalDatabase:
+  dialectDriver: "postgresql"
   host: ""
   port: 5432
   user: postgres
@@ -1435,9 +1394,10 @@ minio:
     loadBalancerIP: ""
     ports:
       api: 80
+
 ## @section External S3 parameters
 ## All of these values are only used when minio.enabled is set to false
-## @param externalS3.host External S3 host
+## @param externalS3.host External S3 host. When using AWS S3, include appropriate [regional code](https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region), e.g. "eu-central-1.amazonaws.com
 ## @param externalS3.port External S3 port number
 ## @param externalS3.useCredentialsInSecret Whether to use a secret to store the S3 credentials
 ## @param externalS3.accessKeyID External S3 access key ID
@@ -1460,4 +1420,21 @@ externalS3:
   existingSecretKeySecretKey: "root-password"
   protocol: "https"
   bucket: "mlflow"
+  serveArtifacts: true
+
+## @section External Google Cloud Storage parameters
+## All of these values are only used when minio.enabled is set to false and externalS3 is not configured (host is empty)
+## @param externalGCS.bucket GCS bucket name. Activate gcs artifact storage if set
+## @param externalGCS.googleCloudProject Google Cloud Project to use (optional, needed when using "default application credentials")
+## @param externalGCS.useCredentialsInSecret Whether to read the GCS application credentials from a secret
+## @param externalGCS.existingSecret Name of an existing secret key containing the application credentials file (required when useCredentialsInSecret is true)
+## @param externalGCS.existingSecretKey Key in the existing secret containing the application credentials (required when useCredentialsInSecret is true)
+## @param externalGCS.serveArtifacts Whether artifact serving is enabled
+##
+externalGCS:
+  bucket: ""
+  googleCloudProject: ""
+  useCredentialsInSecret: false
+  existingSecret: ""
+  existingSecretKey: ""
   serveArtifacts: true
