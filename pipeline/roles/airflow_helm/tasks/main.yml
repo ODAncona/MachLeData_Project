@@ -7,18 +7,18 @@
   ansible.builtin.command:
     cmd: helm repo update
 
-- name: Pull the Bitnami MLflow Helm chart
+- name: Pull the Bitnami Apache Airflow Helm chart
   ansible.builtin.command:
-    cmd: helm pull bitnami/mlflow --untar
+    cmd: helm pull bitnami/airflow --untar
   args:
     chdir: /tmp
-  when: not lookup('file', '/tmp/mlflow/Chart.yaml', errors='ignore')
+  when: not lookup('file', '/tmp/airflow/Chart.yaml', errors='ignore')
 
-- name: Install or upgrade MLflow using Bitnami Helm chart
+- name: Install or upgrade Apache Airflow using Bitnami Helm chart
   ansible.builtin.command:
     cmd: >
-      helm upgrade --install my-mlflow
-      bitnami/mlflow
-      -f {{ mlflow_values_path }}
+      helm upgrade --install my-release
+      bitnami/airflow
+      -f {{ apache_values_path }}
       --namespace {{ k8s_namespace }}
   register: helm_install

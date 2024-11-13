@@ -10,3 +10,4 @@
     - gcp_gke
     - kubernetes_secrets
     - mlflow_helm
+    - airflow_helm
