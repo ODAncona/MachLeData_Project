@@ -13,15 +13,15 @@
 
 - name: Ensure GKE cluster exists
   ansible.builtin.command:
-    cmd: gcloud container clusters describe {{ gke_cluster_name }} --region {{ gke_cluster_region }}
+    cmd: gcloud container clusters describe {{ gke_cluster_name }} --zone {{ gke_cluster_zone }}
   register: gke_cluster
   failed_when: false
 
 - name: Create GKE cluster if it doesn't exist
   ansible.builtin.command:
-    cmd: gcloud container clusters create {{ gke_cluster_name }} --region {{ gke_cluster_region }} --num-nodes 1 --machine-type e2-medium
+    cmd: gcloud container clusters create {{ gke_cluster_name }} --zone {{ gke_cluster_zone }} --num-nodes {{ gke_initial_node_count }} --machine-type {{ gke_machine_type }}
   when: gke_cluster.rc != 0
 
 - name: Get GKE credentials for kubectl access
   ansible.builtin.command:
-    cmd: gcloud container clusters get-credentials {{ gke_cluster_name }} --region {{ gke_cluster_region }}
+    cmd: gcloud container clusters get-credentials {{ gke_cluster_name }} --zone {{ gke_cluster_zone }}
