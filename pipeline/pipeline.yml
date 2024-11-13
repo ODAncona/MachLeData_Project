@@ -175,3 +175,19 @@
         cmd: kubectl rollout status deployment my-mlflow --namespace {{ k8s_namespace }}
       retries: 5
       delay: 15
+
+# Cluster Setup on GKE
+    - name: Ensure GKE cluster exists
+      ansible.builtin.command:
+        cmd: gcloud container clusters describe {{ gke_cluster_name }} --region {{ gke_cluster_region }}
+      register: gke_cluster
+      failed_when: false
+ 
+    - name: Create GKE cluster if it doesn't exist
+      ansible.builtin.command:
+        cmd: gcloud container clusters create {{ gke_cluster_name }} --region {{ gke_cluster_region }} --num-nodes {{ gke_initial_node_count }} --machine-type {{ gke_machine_type }}
+      when: gke_cluster.rc != 0
+ 
+    - name: Get GKE credentials for kubectl access
+      ansible.builtin.command:
+        cmd: gcloud container clusters get-credentials {{ gke_cluster_name }} --region {{ gke_cluster_region }}
