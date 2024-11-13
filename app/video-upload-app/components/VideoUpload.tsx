@@ -1,59 +1,71 @@
+// components/VideoUpload.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
-type VideoUploadProps = {
-  setIsLoggedIn: (loggedIn: boolean) => void;
-};
+interface VideoUploadProps {
+  setIsLoggedIn: (value: boolean) => void;
+}
 
 const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState('');
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.type.startsWith('video')) {
-      setVideoFile(file);
-    } else {
-      alert('Please select a valid video file');
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    // Check if the file is a video
+    if (file && !file.type.startsWith('video/')) {
+      setUploadStatus('Error: Please upload a valid video file.');
+      setVideoFile(null);
+      return;
     }
+
+    // Check if the file size is less than 1MB
+    if (file && file.size > 1 * 1024 * 1024) { // 1MB = 1 * 1024 * 1024 bytes
+      setUploadStatus('Error: File size should be less than 1MB.');
+      setVideoFile(null);
+      return;
+    }
+
+    // If validations pass, set the file and clear any previous error messages
+    setVideoFile(file);
+    setUploadStatus(null);
   };
 
   const handleUpload = async () => {
     if (!videoFile) {
-      alert('Please select a video file.');
+      setUploadStatus('Error: Please select a valid video file.');
       return;
     }
 
+    // Prepare form data for upload
     const formData = new FormData();
     formData.append('video', videoFile);
 
     try {
-      setUploadStatus('Uploading...');
-      const response = await axios.post('/api/upload', formData, { // check avec danco pour comment ça marche
+      const response = await axios.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (response.data.success) {
         setIsLoggedIn(true);
-        router.push('/home');
+        router.push('/'); // Redirect to Home
       } else {
-        setIsLoggedIn(false);
-        alert('Login failed based on model response');
+        setUploadStatus('Login failed. Please try again.');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      setUploadStatus('Upload failed');
+      setUploadStatus('An error occurred during upload. Please try again.');
     }
   };
 
   return (
-    <div>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
       <h2>Upload Video</h2>
       <input type="file" accept="video/*" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload and Submit</button>
-      <p>{uploadStatus}</p>
+      <button onClick={handleUpload} style={{ marginTop: '10px' }}>Upload and Submit</button>
+      {uploadStatus && <p style={{ color: 'red', marginTop: '10px' }}>{uploadStatus}</p>}
     </div>
   );
 };
