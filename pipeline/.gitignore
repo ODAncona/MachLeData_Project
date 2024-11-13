@@ -1,3 +1,2 @@
-delete.sh
-installation.sh
 charts
+mlflow/kubernetes/helm/values.yaml

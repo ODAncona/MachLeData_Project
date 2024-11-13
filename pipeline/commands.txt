@@ -1,0 +1,15 @@
+minikube delete
+minikube start --cpus=6 --memory=16384
+minikube dashboard --url
+
+paste env variable into terminal
+./installation.sh
+
+
+cd <repo_path>/pipeline/mlflow/kubernetes/helm/
+
+helm dependency build
+helm install my-mlflow -f values.yaml .
+
+
+
