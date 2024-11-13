@@ -450,7 +450,10 @@ tracking:
   extraEnvVarsSecret: ""
   ## @param tracking.extraVolumes Optionally specify extra list of additional volumes for the mlflow pod(s)
   ##
-  extraVolumes: []
+  extraVolumes:
+    - name: cloudsql-instance-credentials
+      secret:
+        secretName: cloudsql-instance-credentials
   ## @param tracking.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the mlflow container(s)
   ##
   extraVolumeMounts: []
@@ -464,10 +467,23 @@ tracking:
   ##       - name: portname
   ##         containerPort: 1234
   ##
-  sidecars: []
+  sidecars:
+    - name: cloud-sql-proxy
+      image: gcr.io/cloudsql-docker/gce-proxy:1.33.4
+      imagePullPolicy: Always
+      command:
+        - "/cloud_sql_proxy"
+      args:
+        - "-instances=machledata-project:europe-west6:mlflow-postgre=tcp:5432"
+        - "-credential_file=/secrets/cloudsql/credentials.json"
+      volumeMounts:
+        - name: cloudsql-instance-credentials
+          mountPath: /secrets/cloudsql
+          readOnly: true
+
   ## @param tracking.enableDefaultInitContainers Add default init containers to the deployment
   ##
-  enableDefaultInitContainers: true
+  enableDefaultInitContainers: false
   ## @param tracking.initContainers Add additional init containers to the mlflow pod(s)
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
   ## e.g:
@@ -1343,11 +1359,11 @@ postgresql:
 
 externalDatabase:
   dialectDriver: "postgresql"
-  host: "34.65.110.129"
+  host: "localhost"
   port: 5432
   user: "dbuser"                    
-  password: "postgres"              
-  database: "mlflow"                
+  password: "postgres"            
+  database: "mlflow"              
   authDatabase: ""                  
   existingSecret: "cloudsql-db-credentials"
   existingSecretPasswordKey: "DB_PASSWORD"
@@ -1434,9 +1450,10 @@ externalS3:
 ##
 
 externalGCS:
-  bucket: "bucket-faceaudioanalyser"
-  googleCloudProject: "mlops-faceaudioanalyser"
+  bucket: "bucket-tracking-server"
+  googleCloudProject: "machledata-project"
   useCredentialsInSecret: true
   existingSecret: "gcs-credentials"
   existingSecretKey: "credentials.json"
   serveArtifacts: true
+

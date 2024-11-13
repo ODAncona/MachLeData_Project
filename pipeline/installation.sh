@@ -72,10 +72,17 @@ create_cloudsql_service_account() {
 # Configuration de Google Cloud Storage (GCS)
 setup_gcs_bucket() {
   echo "Configuration de Google Cloud Storage..."
-  if ! gsutil ls -b "gs://$GCP_BUCKET_NAME" &> /dev/null; then
-    gsutil mb -l $GCP_BUCKET_LOCATION gs://$GCP_BUCKET_NAME
+  if ! gsutil ls -b "gs://GCP_BUCKET_TRACKING_NAME" &> /dev/null; then
+    gsutil mb -l $GCP_BUCKET_LOCATION gs://GCP_BUCKET_TRACKING_NAME
   else
-    echo "Le bucket $GCP_BUCKET_NAME existe déjà."
+    echo "Le bucket GCP_BUCKET_TRACKING_NAME existe déjà."
+  fi
+
+  echo "Configuration de Google Cloud Storage..."
+  if ! gsutil ls -b "gs://GCP_BUCKET_PIPELINE_NAME" &> /dev/null; then
+    gsutil mb -l $GCP_BUCKET_LOCATION gs://GCP_BUCKET_PIPELINE_NAME
+  else
+    echo "Le bucket GCP_BUCKET_PIPELINE_NAME existe déjà."
   fi
 }
 

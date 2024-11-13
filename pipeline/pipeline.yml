@@ -1,0 +1,143 @@
+---
+- name: Setup GCP resources for MLflow
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars.yml  # Inclure les variables depuis le fichier séparé
+
+  tasks:
+    - name: Authenticate with gcloud
+      ansible.builtin.command:
+        cmd: gcloud auth application-default login
+      when: not lookup('file', '~/.config/gcloud/application_default_credentials.json', errors='ignore')
+
+    - name: Set GCP project
+      ansible.builtin.command:
+        cmd: gcloud config set project {{ gcp_project_id }}
+
+    - name: Ensure GCP project exists
+      ansible.builtin.command:
+        cmd: gcloud projects describe {{ gcp_project_id }}
+      register: gcp_project
+      failed_when: false
+
+    - name: Create GCP project if it doesn't exist
+      ansible.builtin.command:
+        cmd: gcloud projects create {{ gcp_project_id }}
+      when: gcp_project.rc != 0
+
+    - name: Link billing account
+      ansible.builtin.command:
+        cmd: gcloud beta billing projects link {{ gcp_project_id }} --billing-account {{ gcp_billing_account_id }}
+      when: gcp_billing_account_id is defined and gcp_project.rc != 0
+
+    - name: Ensure service account exists
+      ansible.builtin.command:
+        cmd: gcloud iam service-accounts describe {{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com
+      register: sa_exists
+      failed_when: false
+
+    - name: Create service account if it doesn't exist
+      ansible.builtin.command:
+        cmd: gcloud iam service-accounts create {{ cloudsql_sa_name }} --display-name "Service Account for Cloud SQL Auth Proxy"
+      when: sa_exists.rc != 0
+
+    - name: Grant Cloud SQL Client role to service account
+      ansible.builtin.command:
+        cmd: gcloud projects add-iam-policy-binding {{ gcp_project_id }} --member "serviceAccount:{{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com" --role "roles/cloudsql.client"
+
+    - name: Create service account key if not present
+      ansible.builtin.command:
+        cmd: gcloud iam service-accounts keys create {{ cloudsql_sa_key_file }} --iam-account {{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com
+      when: not lookup('file', cloudsql_sa_key_file, errors='ignore')
+
+    - name: Ensure GCS bucket for tracking exists
+      ansible.builtin.command:
+        cmd: gsutil ls -b gs://{{ gcp_bucket_tracking_name }}
+      register: bucket_tracking_exists
+      failed_when: false
+
+    - name: Create GCS bucket for tracking if not exists
+      ansible.builtin.command:
+        cmd: gsutil mb -l {{ gcp_bucket_location }} gs://{{ gcp_bucket_tracking_name }}
+      when: bucket_tracking_exists.rc != 0
+
+    - name: Ensure Cloud SQL instance exists
+      ansible.builtin.command:
+        cmd: gcloud sql instances describe {{ db_instance_name }}
+      register: sql_instance
+      failed_when: false
+
+    - name: Create Cloud SQL instance if not exists
+      ansible.builtin.command:
+        cmd: gcloud sql instances create {{ db_instance_name }} --database-version=POSTGRES_13 --cpu=2 --memory=4096MB --region={{ gcp_bucket_location }}
+      when: sql_instance.rc != 0
+
+    - name: Ensure database exists
+      ansible.builtin.command:
+        cmd: gcloud sql databases describe {{ db_name }} --instance={{ db_instance_name }}
+      register: db_exists
+      failed_when: false
+
+    - name: Create database if not exists
+      ansible.builtin.command:
+        cmd: gcloud sql databases create {{ db_name }} --instance={{ db_instance_name }}
+      when: db_exists.rc != 0
+
+    - name: Set password for database user
+      ansible.builtin.command:
+        cmd: gcloud sql users set-password {{ db_user }} --instance={{ db_instance_name }} --password={{ db_password }}
+
+    - name: Ensure Kubernetes secret for GCS credentials exists
+      ansible.builtin.command:
+        cmd: kubectl get secret gcs-credentials
+      register: gcs_secret
+      failed_when: false
+
+    - name: Create Kubernetes secret for GCS credentials if not exists
+      ansible.builtin.k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: gcs-credentials
+          type: Opaque
+          data:
+            credentials.json: "{{ lookup('file', '~/.config/gcloud/application_default_credentials.json') | b64encode }}"
+      when: gcs_secret.rc != 0
+
+    - name: Ensure Kubernetes secret for Cloud SQL Auth proxy exists
+      ansible.builtin.command:
+        cmd: kubectl get secret {{ cloudsql_k8s_secret_name }}
+      register: cloudsql_secret
+      failed_when: false
+
+    - name: Create Kubernetes secret for Cloud SQL Auth proxy if not exists
+      ansible.builtin.k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ cloudsql_k8s_secret_name }}"
+          type: Opaque
+          data:
+            credentials.json: "{{ lookup('file', cloudsql_sa_key_file) | b64encode }}"
+      when: cloudsql_secret.rc != 0
+
+    - name: Ensure Kubernetes secret for database credentials exists
+      ansible.builtin.command:
+        cmd: kubectl get secret {{ existing_secret }}
+      register: db_secret
+      failed_when: false
+
+    - name: Create Kubernetes secret for database credentials if not exists
+      ansible.builtin.k8s:
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ existing_secret }}"
+          type: Opaque
+          data:
+            "{{ existing_secret_password_key }}": "{{ db_password | b64encode }}"
+      when: db_secret.rc != 0
