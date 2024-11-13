@@ -12,4 +12,11 @@ helm dependency build
 helm install my-mlflow -f values.yaml .
 
 
+python3 -m venv ansible-env
+
+source ansible-env/bin/activate
+
+pip install -r requirements.txt
+
+
 
