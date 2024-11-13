@@ -1,0 +1,34 @@
+- name: Grant Cloud SQL Client role to service account
+  ansible.builtin.command:
+    cmd: gcloud projects add-iam-policy-binding {{ gcp_project_id }} --member "serviceAccount:{{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com" --role "roles/cloudsql.client"
+
+- name: Create service account key if not present
+  ansible.builtin.command:
+    cmd: gcloud iam service-accounts keys create {{ cloudsql_sa_key_file }} --iam-account {{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com
+  when: not lookup('file', cloudsql_sa_key_file, errors='ignore')
+
+- name: Ensure Cloud SQL instance exists
+  ansible.builtin.command:
+    cmd: gcloud sql instances describe {{ db_instance_name }}
+  register: sql_instance
+  failed_when: false
+
+- name: Create Cloud SQL instance if not exists
+  ansible.builtin.command:
+    cmd: gcloud sql instances create {{ db_instance_name }} --database-version=POSTGRES_13 --cpu=2 --memory=4096MB --region={{ gcp_bucket_location }}
+  when: sql_instance.rc != 0
+
+- name: Ensure database exists
+  ansible.builtin.command:
+    cmd: gcloud sql databases describe {{ db_name }} --instance={{ db_instance_name }}
+  register: db_exists
+  failed_when: false
+
+- name: Create database if not exists
+  ansible.builtin.command:
+    cmd: gcloud sql databases create {{ db_name }} --instance={{ db_instance_name }}
+  when: db_exists.rc != 0
+
+- name: Set password for database user
+  ansible.builtin.command:
+    cmd: gcloud sql users set-password {{ db_user }} --instance={{ db_instance_name }} --password={{ db_password }}

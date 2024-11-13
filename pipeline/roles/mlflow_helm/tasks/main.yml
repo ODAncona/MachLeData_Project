@@ -1,0 +1,46 @@
+- name: Ensure Kubernetes secret for database credentials exists
+  ansible.builtin.command:
+    cmd: kubectl get secret {{ existing_secret }} --namespace {{ k8s_namespace }}
+  register: db_secret
+  failed_when: db_secret.rc != 0 and "NotFound" not in db_secret.stderr
+  ignore_errors: true
+
+- name: Create Kubernetes secret for database credentials if not exists
+  ansible.builtin.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ existing_secret }}"
+        namespace: "{{ k8s_namespace }}"
+      type: Opaque
+      data:
+        "db-password": "{{ db_password | b64encode }}"
+  when: db_secret.rc != 0
+
+- name: Add Bitnami OCI Helm repository
+  ansible.builtin.command:
+    cmd: helm repo add bitnami https://charts.bitnami.com/bitnami
+  when: not lookup('file', '~/.cache/helm/repository/bitnami-index.yaml', errors='ignore')
+
+- name: Pull the Bitnami MLflow Helm chart
+  ansible.builtin.command:
+    cmd: helm pull oci://registry-1.docker.io/bitnamicharts/mlflow --version {{ mlflow_chart_version }} --untar
+  args:
+    chdir: /tmp
+  when: not lookup('file', '/tmp/mlflow/Chart.yaml', errors='ignore')
+
+- name: Install or upgrade MLflow using Bitnami Helm chart
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install my-mlflow
+      oci://registry-1.docker.io/bitnamicharts/mlflow
+      -f {{ mlflow_values_path }}
+      --namespace {{ k8s_namespace }}
+  register: helm_install
+
+- name: Verify MLflow deployment from Bitnami
+  ansible.builtin.command:
+    cmd: kubectl rollout status deployment my-mlflow --namespace {{ k8s_namespace }}
+  retries: 5
+  delay: 15
