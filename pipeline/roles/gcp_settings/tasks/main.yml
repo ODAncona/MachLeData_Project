@@ -33,3 +33,10 @@
   ansible.builtin.command:
     cmd: gcloud iam service-accounts create {{ cloudsql_sa_name }} --display-name "Service Account for Cloud SQL Auth Proxy"
   when: sa_exists.rc != 0
+
+- name: Install gke-gcloud-auth-plugin
+  ansible.builtin.command:
+    cmd: gcloud components install gke-gcloud-auth-plugin --quiet
+  args:
+    creates: /usr/lib/google-cloud-sdk/bin/gke-gcloud-auth-plugin
+
