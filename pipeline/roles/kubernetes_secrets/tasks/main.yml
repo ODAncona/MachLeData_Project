@@ -55,5 +55,5 @@
         namespace: "{{ k8s_namespace }}"
       type: Opaque
       data:
-        "db-password": "{{ db_password | b64encode }}"
+        "DB_PASSWORD": "{{ db_password | b64encode }}"
   when: db_secret.rc != 0

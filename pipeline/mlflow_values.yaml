@@ -474,7 +474,7 @@ tracking:
       command:
         - "/cloud_sql_proxy"
       args:
-        - "-instances=machledata-project:europe-west6:mlflow-postgre=tcp:5432"
+        - "-instances=machledata-project:europe-west6:machledata-postgre=tcp:5432"
         - "-credential_file=/secrets/cloudsql/credentials.json"
       volumeMounts:
         - name: cloudsql-instance-credentials
@@ -502,7 +502,7 @@ tracking:
   service:
     ## @param tracking.service.type mlflow service type
     ##
-    type: NodePort
+    type: LoadBalancer
     ## @param tracking.service.ports.http mlflow service HTTP port
     ## @param tracking.service.ports.https mlflow service HTTPS port
     ##
@@ -1450,7 +1450,7 @@ externalS3:
 ##
 
 externalGCS:
-  bucket: "bucket-tracking-server"
+  bucket: "bucket-tracking-server2"
   googleCloudProject: "machledata-project"
   useCredentialsInSecret: true
   existingSecret: "gcs-credentials"
