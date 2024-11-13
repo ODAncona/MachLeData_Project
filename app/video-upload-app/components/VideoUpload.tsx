@@ -1,5 +1,5 @@
 // components/VideoUpload.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
@@ -10,37 +10,34 @@ interface VideoUploadProps {
 const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [isFormValid, setIsFormValid] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    // Validate the form whenever `videoFile` changes
+    if (videoFile && videoFile.type.startsWith('video/') && videoFile.size <= 1 * 1024 * 1024) {
+      setIsFormValid(true);
+      setUploadStatus(null);
+    } else {
+      setIsFormValid(false);
+      if (!videoFile) {
+        setUploadStatus('Error: Please select a video file.');
+      } else if (!videoFile.type.startsWith('video/')) {
+        setUploadStatus('Error: Only video files are allowed.');
+      } else if (videoFile.size > 1 * 1024 * 1024) {
+        setUploadStatus('Error: File size must be less than 1MB.');
+      }
+    }
+  }, [videoFile]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    // Check if the file is a video
-    if (file && !file.type.startsWith('video/')) {
-      setUploadStatus('Error: Please upload a valid video file.');
-      setVideoFile(null);
-      return;
-    }
-
-    // Check if the file size is less than 1MB
-    if (file && file.size > 1 * 1024 * 1024) { // 1MB = 1 * 1024 * 1024 bytes
-      setUploadStatus('Error: File size should be less than 1MB.');
-      setVideoFile(null);
-      return;
-    }
-
-    // If validations pass, set the file and clear any previous error messages
+    const file = e.target.files?.[0] || null;
     setVideoFile(file);
-    setUploadStatus(null);
   };
 
   const handleUpload = async () => {
-    if (!videoFile) {
-      setUploadStatus('Error: Please select a valid video file.');
-      return;
-    }
+    if (!isFormValid || !videoFile) return;
 
-    // Prepare form data for upload
     const formData = new FormData();
     formData.append('video', videoFile);
 
@@ -64,7 +61,17 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h2>Upload Video</h2>
       <input type="file" accept="video/*" onChange={handleFileChange} />
-      <button onClick={handleUpload} style={{ marginTop: '10px' }}>Upload and Submit</button>
+      <button
+        onClick={handleUpload}
+        disabled={!isFormValid} // Disable button if form is invalid
+        style={{
+          marginTop: '10px',
+          backgroundColor: isFormValid ? '#007bff' : '#ccc',
+          cursor: isFormValid ? 'pointer' : 'not-allowed',
+        }}
+      >
+        Upload and Submit
+      </button>
       {uploadStatus && <p style={{ color: 'red', marginTop: '10px' }}>{uploadStatus}</p>}
     </div>
   );
