@@ -177,6 +177,19 @@
       delay: 15
 
 # Cluster Setup on GKE
+    - name: Check if Kubernetes Engine API is enabled
+      ansible.builtin.command:
+        cmd: gcloud services list --enabled --filter="container.googleapis.com" --format="value(config.name)"
+      register: gke_api_status
+      failed_when: false
+
+    - name: Enable Kubernetes Engine API
+      ansible.builtin.command:
+        cmd: gcloud services enable container.googleapis.com
+      when: gke_api_status.stdout.strip() == ""
+      register: enable_gke_api
+      changed_when: enable_gke_api.rc == 0
+
     - name: Ensure GKE cluster exists
       ansible.builtin.command:
         cmd: gcloud container clusters describe {{ gke_cluster_name }} --region {{ gke_cluster_region }}
@@ -185,7 +198,7 @@
  
     - name: Create GKE cluster if it doesn't exist
       ansible.builtin.command:
-        cmd: gcloud container clusters create {{ gke_cluster_name }} --region {{ gke_cluster_region }} --num-nodes {{ gke_initial_node_count }} --machine-type {{ gke_machine_type }}
+        cmd: gcloud container clusters create {{ gke_cluster_name }} --region {{ gke_cluster_region }} --num-nodes 1 --machine-type e2-medium
       when: gke_cluster.rc != 0
  
     - name: Get GKE credentials for kubectl access
