@@ -9,7 +9,6 @@ const Register: React.FC = () => {
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
-    // Validate the form whenever `name` or `videoFiles` changes
     if (name && videoFiles.length > 0 && videoFiles.length <= 10) {
       setIsFormValid(true);
       setRegisterStatus(null);
@@ -23,8 +22,6 @@ const Register: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
-
-    // Only include valid video files and limit to 10 files
     const validVideos = files.filter((file) => file.type.startsWith('video/')).slice(0, 10);
 
     if (validVideos.length !== files.length) {
@@ -68,7 +65,12 @@ const Register: React.FC = () => {
         placeholder="Enter your name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        style={{ marginBottom: '10px', display: 'block', width: '100%' }}
+        style={{
+          marginBottom: '10px',
+          display: 'block',
+          width: '50%', // Smaller width for name input
+          margin: '0 auto',
+        }}
       />
       <input
         type="file"
@@ -77,9 +79,19 @@ const Register: React.FC = () => {
         onChange={handleFileChange}
         style={{ marginBottom: '10px' }}
       />
+
+      {/* Display the list of selected video files */}
+      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+        {videoFiles.map((file, index) => (
+          <li key={index} style={{ textAlign: 'left', maxWidth: '80%', margin: '5px auto' }}>
+            {file.name} {}
+          </li>
+        ))}
+      </ul>
+
       <button
         onClick={handleRegister}
-        disabled={!isFormValid} // Disable button if form is invalid
+        disabled={!isFormValid}
         style={{
           marginTop: '10px',
           backgroundColor: isFormValid ? '#007bff' : '#ccc',
