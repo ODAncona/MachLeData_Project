@@ -26,5 +26,5 @@
 - name: Verify MLflow deployment from Bitnami
   ansible.builtin.command:
     cmd: kubectl rollout status deployment my-mlflow --namespace {{ k8s_namespace }}
-  retries: 5
-  delay: 15
+  retries: 3
+  delay: 20
