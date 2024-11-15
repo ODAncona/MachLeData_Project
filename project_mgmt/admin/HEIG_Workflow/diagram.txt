@@ -1,0 +1,92 @@
+@startuml
+' Use strict UML style
+skinparam style strictuml
+
+' Define components
+package "Local Environment" {
+    actor DataScientist as "Full-Stack Data Scientist"
+    [Git Repository]
+    [Data Folder (.dvc)]
+    folder "Source Code (src/)" {
+        [prepare.py]
+        [train.py]
+        [validate.py]
+        [serve.py]
+    }
+}
+
+package "Kubernetes Cluster" {
+    [Kubeflow Pipelines] as Kubeflow
+    [MLflow Tracking Server] as MLflowServer
+    [MLflow Model Registry] as MLflowRegistry
+    [KServe]
+    [Harbor (Container Registry)] as Harbor
+    [Label Studio]
+    [MinIO (S3 Storage)] as MinIO
+    [Logging System]
+}
+
+' Data Flow and Interactions
+
+' Local Environment Interactions
+DataScientist --> [Git Repository] : Push/Pull Code
+[Git Repository] --> [Data Folder (.dvc)] : Versioned Data Metadata
+[Data Folder (.dvc)] <-- MinIO : DVC Pull/Push Data
+
+DataScientist --> [prepare.py] : Run Locally
+[prepare.py] --> MinIO : Pull Data via DVC
+[prepare.py] --> [train.py] : Provide Prepared Data
+[train.py] --> [validate.py] : Trained Model
+[train.py] --> MLflowServer : Log Metrics & Params
+[validate.py] --> MLflowServer : Log Validation Metrics
+[validate.py] --> MLflowRegistry : Register Model (if better)
+[MLflowRegistry] --> KServe : Deploy Model (if approved)
+KServe --> [Production Model Service]
+
+' Cluster Execution Interactions
+DataScientist --> Kubeflow : Submit Pipeline
+Kubeflow --> Harbor : Pull Container Images
+Kubeflow --> [prepare.py] : Execute in Container
+[prepare.py] --> MinIO : Pull Data via DVC
+Kubeflow --> [train.py] : Execute in Container
+[train.py] --> MLflowServer : Log Metrics & Params
+Kubeflow --> [validate.py] : Execute in Container
+[validate.py] --> MLflowServer : Log Validation Metrics
+
+' Data Annotation Workflow
+[Production Model Service] --> MinIO : Store New Data (Images)
+MinIO --> (Trigger) : X New Images Added
+(Trigger) --> LabelStudio : Initiate Pre-annotation
+LabelStudio --> DataScientist : Requires Validation
+DataScientist --> LabelStudio : Validate Annotations
+LabelStudio --> MinIO : Store Validated Data
+MinIO --> [Data Folder (.dvc)] : Update Dataset
+[Data Folder (.dvc)] --> DVC : Version New Dataset
+
+' Logging
+[All Components] --> [Logging System] : Log Actions & Events
+
+' Experiment Tracking
+[train.py] --> MLflowServer : Log Experiment Details
+[validate.py] --> MLflowServer : Log Experiment Details
+
+' Hyperparameter Tuning with Optuna (Optional)
+DataScientist --> [Optuna Script] : Run Locally or on Cluster
+[Optuna Script] --> [train.py] : Multiple Runs with Different HPs
+[Optuna Script] --> MLflowServer : Log All Experiment Results
+
+' Notes and Legends
+note right of DataScientist
+User Actions:
+- Run training locally
+- Submit pipelines to cluster
+- Validate annotations
+end note
+
+note right of [Logging System]
+Logs:
+- Actions performed
+- Timestamps
+- Metadata
+end note
+@enduml
