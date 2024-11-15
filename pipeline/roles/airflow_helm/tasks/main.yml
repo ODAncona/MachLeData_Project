@@ -1,0 +1,24 @@
+- name: Add Bitnami Helm repository
+  ansible.builtin.command:
+    cmd: helm repo add bitnami https://charts.bitnami.com/bitnami
+  when: not lookup('file', '~/.cache/helm/repository/bitnami-index.yaml', errors='ignore')
+
+- name: Update Helm repository
+  ansible.builtin.command:
+    cmd: helm repo update
+
+- name: Pull the Bitnami Apache Airflow Helm chart
+  ansible.builtin.command:
+    cmd: helm pull bitnami/airflow --untar
+  args:
+    chdir: /tmp
+  when: not lookup('file', '/tmp/airflow/Chart.yaml', errors='ignore')
+
+- name: Install or upgrade Apache Airflow using Bitnami Helm chart
+  ansible.builtin.command:
+    cmd: >
+      helm upgrade --install my-release
+      bitnami/airflow
+      -f {{ apache_values_path }}
+      --namespace {{ k8s_namespace }}
+  register: helm_install

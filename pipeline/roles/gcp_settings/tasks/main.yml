@@ -1,0 +1,42 @@
+- name: Authenticate with gcloud
+  ansible.builtin.command:
+    cmd: gcloud auth application-default login
+  when: not lookup('file', '~/.config/gcloud/application_default_credentials.json', errors='ignore')
+
+- name: Set GCP project
+  ansible.builtin.command:
+    cmd: gcloud config set project {{ gcp_project_id }}
+
+- name: Ensure GCP project exists
+  ansible.builtin.command:
+    cmd: gcloud projects describe {{ gcp_project_id }}
+  register: gcp_project
+  failed_when: false
+
+- name: Create GCP project if it doesn't exist
+  ansible.builtin.command:
+    cmd: gcloud projects create {{ gcp_project_id }}
+  when: gcp_project.rc != 0
+
+- name: Link billing account
+  ansible.builtin.command:
+    cmd: gcloud beta billing projects link {{ gcp_project_id }} --billing-account {{ gcp_billing_account_id }}
+  when: gcp_billing_account_id is defined and gcp_project.rc != 0
+
+- name: Ensure service account exists
+  ansible.builtin.command:
+    cmd: gcloud iam service-accounts describe {{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com
+  register: sa_exists
+  failed_when: false
+
+- name: Create service account if it doesn't exist
+  ansible.builtin.command:
+    cmd: gcloud iam service-accounts create {{ cloudsql_sa_name }} --display-name "Service Account for Cloud SQL Auth Proxy"
+  when: sa_exists.rc != 0
+
+- name: Install gke-gcloud-auth-plugin
+  ansible.builtin.command:
+    cmd: gcloud components install gke-gcloud-auth-plugin --quiet
+  args:
+    creates: /usr/lib/google-cloud-sdk/bin/gke-gcloud-auth-plugin
+
