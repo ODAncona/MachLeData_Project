@@ -175,4 +175,5 @@ cython_debug/
 .kaggle
 data/
 outputs
-mlruns
+mlrunsmodel/preprocessed_data/Yann_Zurbrugg/
+model/lightning_logs/
