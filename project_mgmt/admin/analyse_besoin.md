@@ -2,27 +2,27 @@
 
 #### 1.1. Ingestion et Intégration des Données
 
--[] Ingestion et collecte de données à partir de sources structurées et non structurées.
--[] Intégration avec les systèmes de stockage (data lakes, entrepôts de données, NoSQL, SQL).
--[] Ingestion de données en temps réel pour l'analyse en streaming.
--[] APIs d'accès aux données pour un accès programmatique.
--[] Support pour divers formats de données (CSV, JSON, Parquet, Avro, XML).
--[] Synchronisation des données entre environnements.
--[] Réplication des données pour la haute disponibilité et la sauvegarde.
--[] Planification et ordonnancement des workflows de données.
+-[ ] Ingestion et collecte de données à partir de sources structurées et non structurées.
+-[ ] Intégration avec les systèmes de stockage (data lakes, entrepôts de données, NoSQL, SQL).
+-[ ] Ingestion de données en temps réel pour l'analyse en streaming.
+-[ ] APIs d'accès aux données pour un accès programmatique.
+-[ ] Support pour divers formats de données (CSV, JSON, Parquet, Avro, XML).
+-[ ] Synchronisation des données entre environnements.
+-[ ] Réplication des données pour la haute disponibilité et la sauvegarde.
+-[ ] Planification et ordonnancement des workflows de données.
 
 #### 1.2. Traitement et Transformation des Données
 
--[] Traitement et transformation des données pour l'analyse (par lots et en temps réel).
--[] Traitement distribué des données (par exemple, Spark, Hadoop).
--[] Normalisation et mise à l'échelle des données pour un entraînement cohérent des modèles.
--[] Ingénierie des features pour créer des caractéristiques dérivées ou composites.
--[] Augmentation des données pour augmenter artificiellement la taille du jeu de données.
--[] Fusion et intégration des données provenant de multiples sources.
--[] Enrichissement des données en ajoutant des sources externes.
--[] Transformation des données en mémoire pour des performances accrues.
--[] Gestion des données géospatiales et temporelles.
--[] Gestion des données multimédias (images, audio, vidéo).
+-[ ] Traitement et transformation des données pour l'analyse (par lots et en temps réel).
+-[ ] Traitement distribué des données (par exemple, Spark, Hadoop).
+-[ ] Normalisation et mise à l'échelle des données pour un entraînement cohérent des modèles.
+-[ ] Ingénierie des features pour créer des caractéristiques dérivées ou composites.
+-[ ] Augmentation des données pour augmenter artificiellement la taille du jeu de données.
+-[ ] Fusion et intégration des données provenant de multiples sources.
+-[ ] Enrichissement des données en ajoutant des sources externes.
+-[ ] Transformation des données en mémoire pour des performances accrues.
+-[ ] Gestion des données géospatiales et temporelles.
+-[ ] Gestion des données multimédias (images, audio, vidéo).
 
 #### 1.3. Qualité et Validation des Données
 
