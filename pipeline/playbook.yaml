@@ -1,0 +1,13 @@
+- name: Setup GCP resources for MLflow
+  hosts: localhost
+  connection: local
+  vars_files:
+    - vars.yml
+  roles:
+    - gcp_settings
+    - gcp_gcs
+    - gcp_sql
+    - gcp_gke
+    - kubernetes_secrets
+    - mlflow_helm
+    - airflow_helm

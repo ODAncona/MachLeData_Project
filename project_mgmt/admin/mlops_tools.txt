@@ -1,0 +1,57 @@
+# 1. Data
+Apache Spark
+Apache Kafka
+Apache NiFi
+Pachyderm
+DVC
+Great Expectations
+Airbyte
+Meltano
+Feast
+Delta Lake
+dbt
+Prefect
+Tecton
+Dagster
+
+# 2. Machine Learning
+TensorFlow
+PyTorch
+Keras
+Scikit-learn
+MLflow
+DVC
+Optuna
+TensorBoard
+KerasTuner
+TF Explain
+Captum
+Metaflow
+Kubeflow
+ClearML
+Weights & Biases (freemium but offers an open-source component)
+Polyaxon
+Flyte
+
+# 3. Development
+Git
+GitLab CE
+Jenkins
+Conda
+PyTest
+VS Code (open source, with extensions)
+Airflow
+ZenML
+
+# 4. Operations
+Kubernetes
+Docker
+Seldon Core
+Prometheus
+Terraform
+KServe
+Kubeflow
+MLRun
+BentoML
+Argo Workflows
+Seldon
