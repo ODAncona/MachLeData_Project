@@ -175,5 +175,7 @@ cython_debug/
 .kaggle
 data/
 outputs
+mlrunsmodel/preprocessed_data/Yann_Zurbrugg/
+model/lightning_logs/
 mlruns
 pipeline/mlflow/kubernetes/helm/values.yaml
