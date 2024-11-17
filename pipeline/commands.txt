@@ -20,3 +20,9 @@ pip install -r requirements.txt
 
 
 
+
+echo Username: $(kubectl get secret --namespace default my-mlflow-tracking -o jsonpath="{ .data.admin-user }" | base64 -d)
+echo Password: $(kubectl get secret --namespace default my-mlflow-tracking -o jsonpath="{.data.admin-password }" | base64 -d)
+
+echo Username: $(kubectl get secret --namespace default my-release-airflow -o jsonpath="{.data.airflow-username}" | base64 -d)
+echo Password: $(kubectl get secret --namespace default my-release-airflow -o jsonpath="{.data.airflow-password}" | base64 -d)
