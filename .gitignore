@@ -177,3 +177,7 @@ data/
 outputs
 mlruns
 pipeline/mlflow/kubernetes/helm/values.yaml
+
+cloudSQL-SA-key.json
+app/video-upload-app/vars.yaml
+myenv
