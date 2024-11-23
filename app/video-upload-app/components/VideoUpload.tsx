@@ -15,7 +15,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
 
   useEffect(() => {
     // Validate the form whenever `videoFile` changes
-    if (videoFile && videoFile.type.startsWith('video/') && videoFile.size <= 1 * 1024 * 1024) {
+    if (videoFile && videoFile.type.startsWith('video/')) {
       setIsFormValid(true);
       setUploadStatus(null);
     } else {
@@ -24,8 +24,6 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
         setUploadStatus('Error: Please select a video file.');
       } else if (!videoFile.type.startsWith('video/')) {
         setUploadStatus('Error: Only video files are allowed.');
-      } else if (videoFile.size > 1 * 1024 * 1024) {
-        setUploadStatus('Error: File size must be less than 1MB.');
       }
     }
   }, [videoFile]);
@@ -38,19 +36,23 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
   const handleUpload = async () => {
     if (!isFormValid || !videoFile) return;
 
+    setUploadStatus('Uploading...');
     const formData = new FormData();
     formData.append('video', videoFile);
 
     try {
       const response = await axios.post('/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        maxBodyLength: Infinity, // Allow large payloads
+        maxContentLength: Infinity, // Allow large payloads
       });
 
       if (response.data.success) {
+        setUploadStatus('Upload successful!');
         setIsLoggedIn(true);
         router.push('/'); // Redirect to Home
       } else {
-        setUploadStatus('Login failed. Please try again.');
+        setUploadStatus('Upload failed. Please try again.');
       }
     } catch (error) {
       setUploadStatus('An error occurred during upload. Please try again.');
@@ -63,7 +65,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
       <input type="file" accept="video/*" onChange={handleFileChange} />
       <button
         onClick={handleUpload}
-        disabled={!isFormValid} // Disable button if form is invalid
+        disabled={!isFormValid}
         style={{
           marginTop: '10px',
           backgroundColor: isFormValid ? '#007bff' : '#ccc',
