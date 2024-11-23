@@ -1,5 +1,5 @@
 // components/VideoUpload.tsx
-import React, { useState, useEffect } from 'react';
+/*import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 
@@ -79,4 +79,19 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
   );
 };
 
-export default VideoUpload;
+export default VideoUpload;*/
+
+import { UploadFile } from '@/actions/sendToBucket';
+import React from 'react';
+function FileUpload(){
+  return (
+    <>
+      <h1 >UPLOAD</h1>
+      <form action={UploadFile}>
+        <input type="file" name="file" />
+        <button type="submit">Upload</button>
+      </form>
+    </>
+  );  
+}
+export default FileUpload;
