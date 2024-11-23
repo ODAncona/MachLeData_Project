@@ -81,17 +81,50 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
 
 export default VideoUpload;*/
 
-import { UploadFile } from '@/actions/sendToBucket';
-import React from 'react';
-function FileUpload(){
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useFileUpload } from '@/actions/uploadHook'; // Adjust the path if necessary
+
+function FileUpload() {
+  const [file, setFile] = useState<File | null>(null); // Declare file as File or null type
+  const [status, setStatus] = useState<string>(''); // Status type is a string
+  const fileUpload = useFileUpload(); // Calling the custom hook
+
+  // Type the event parameter to be a ChangeEvent for an input of type 'file'
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setFile(event.target.files ? event.target.files[0] : null);
+  };
+
+  // Type the event parameter to be a FormEvent for a form submit
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!file) {
+      setStatus('Please select a file to upload');
+      return;
+    }
+
+    // Start the upload process
+    setStatus('Uploading...');
+    const filename = file.name;
+    const uploadSuccess = await fileUpload(filename, file);
+
+    if (uploadSuccess) {
+      setStatus('File uploaded successfully!');
+    } else {
+      setStatus('Error uploading file');
+    }
+  };
+
   return (
-    <>
-      <h1 >UPLOAD</h1>
-      <form action={UploadFile}>
-        <input type="file" name="file" />
+    <div>
+      <h1>Upload a Video</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="file" name="file" onChange={handleFileChange} />
         <button type="submit">Upload</button>
       </form>
-    </>
-  );  
+      {status && <p>{status}</p>}
+    </div>
+  );
 }
+
 export default FileUpload;

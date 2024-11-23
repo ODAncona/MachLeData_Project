@@ -8,8 +8,8 @@ const yaml = require('js-yaml');
 const config = yaml.load(fs.readFileSync('vars.yaml', 'utf8'));
 
 // Extract the variables from the YAML file
-const googleCredentialsPath = config.env.GOOGLE_APPLICATION_CREDENTIALS;
-const googleCloudProject = config.env.GOOGLE_CLOUD_PROJECT;
+const googleCredentialsPath = "C:\\Users\\GSilvestri\\Desktop\\Master\\MLOps\\MachLeData_Project\\cloudSQL-SA-key.json";
+const googleCloudProject = "machledata-project";
 
 export const UploadFile = async (form: FormData) =>{
     // Initialize the Google Cloud Storage client
