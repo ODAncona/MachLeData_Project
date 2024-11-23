@@ -179,3 +179,5 @@ mlrunsmodel/preprocessed_data/Yann_Zurbrugg/
 model/lightning_logs/
 mlruns
 pipeline/mlflow/kubernetes/helm/values.yaml
+lightning_logs/
+preprocessed_data/
