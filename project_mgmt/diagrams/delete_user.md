@@ -19,5 +19,6 @@ MLOpsPipeline -> DeploymentService: deployNewModel
 DeploymentService -> Model: updateDeployedModel
 Model --> DeploymentService: deploymentConfirmed
 DeploymentService --> MLOpsPipeline: deploymentSuccess
+MLOpsPipeline --> Application: deploymentSuccess
 Application --> Admin: userDeleted
 @enduml
