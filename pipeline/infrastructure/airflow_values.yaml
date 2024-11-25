@@ -151,7 +151,7 @@ existingConfigmap: ""
 ## @param dags.repositories [array] Array of repositories from which to download DAG files
 ##
 dags:
-  enabled: false
+  enabled: true
   existingConfigmap: ""
   ## E.g:
   ## repositories:
@@ -160,7 +160,11 @@ dags:
   ##     name: my-dags
   ##     path: /
   ##
-  repositories: []
+  repositories:
+  - repository: https://github.com/ODAncona/dagdag
+    branch: main
+    name: dags-repo
+    path: /
   ## @param dags.sshKey SSH Private key used to clone/sync DAGs from Git repositories (ignored if dags.existingSshKeySecret is set)
   ##
   sshKey: ""

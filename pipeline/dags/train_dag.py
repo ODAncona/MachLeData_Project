@@ -1,23 +1,25 @@
+from datetime import datetime
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from datetime import datetime
+from airflow.models import Variable
+
 import mlflow
-import pandas as pd
+
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.datasets import load_iris
 
 
-IP_MLFLOW = "34.65.82.22"
+IP_MLFLOW = Variable.get("IP_MLFLOW")
 
 
 def train_model():
     mlflow.set_tracking_uri(f"http://{IP_MLFLOW}:80")
-    mlflow.set_experiment("iris_experiment")
+    mlflow.set_experiment("my_first_airflow_experiment")
 
-    data = pd.read_csv("gs://your-bucket-name/iris.csv")
-    X = data.drop("species", axis=1)
-    y = data["species"]
+    X, y = load_iris(return_X_y=True, as_frame=True)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
@@ -33,7 +35,7 @@ def train_model():
 
 
 with DAG(
-    "train", start_date=datetime(2024, 11, 15), schedule_interval=None
+    "train_iris", start_date=datetime(2024, 11, 15), schedule_interval=None
 ) as dag:
     train_task = PythonOperator(
         task_id="train_model", python_callable=train_model
