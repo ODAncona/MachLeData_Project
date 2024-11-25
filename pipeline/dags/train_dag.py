@@ -8,8 +8,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 
+IP_MLFLOW = "34.65.82.22"
+
+
 def train_model():
-    mlflow.set_tracking_uri("http://my-mlflow-tracking:80")
+    mlflow.set_tracking_uri(f"http://{IP_MLFLOW}:80")
     mlflow.set_experiment("iris_experiment")
 
     data = pd.read_csv("gs://your-bucket-name/iris.csv")
