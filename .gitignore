@@ -6,10 +6,10 @@ secrets
 
 # data
 tmp
-data
 logs
 *.log
 *.zip
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
