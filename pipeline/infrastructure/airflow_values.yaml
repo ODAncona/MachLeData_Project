@@ -461,10 +461,19 @@ sidecars: []
 initContainers: []
 ## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for all the Airflow pods
 ##
-extraVolumeMounts: []
+extraVolumeMounts: 
+  - name: requirements-volume
+    mountPath: /bitnami/python/requirements.txt
+    subPath: requirements.txt
+
 ## @param extraVolumes Optionally specify extra list of additional volumes for the all the Airflow pods
 ##
-extraVolumes: []
+extraVolumes: 
+  - name: requirements-volume
+    hostPath:
+      path: requirements_airflow.txt
+      type: File
+
 
 ## @section Airflow web parameters
 ##

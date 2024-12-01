@@ -181,3 +181,4 @@ mlruns
 pipeline/mlflow/kubernetes/helm/values.yaml
 lightning_logs/
 preprocessed_data/
+pipeline/dags/airflow

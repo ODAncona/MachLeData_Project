@@ -29,9 +29,14 @@ def train_model():
     predictions = model.predict(X_test)
     accuracy = accuracy_score(y_test, predictions)
 
-    with mlflow.start_run():
+    with mlflow.start_run() as run:
         mlflow.log_metric("accuracy", accuracy)
         mlflow.sklearn.log_model(model, "model")
+
+        registered_model_name = "iris_logistic_regression"
+        model_uri = f"runs:/{run.info.run_id}/model"
+
+        mlflow.register_model(model_uri=model_uri, name=registered_model_name)
 
 
 with DAG(
