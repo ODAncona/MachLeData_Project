@@ -20,7 +20,7 @@ const IndexPage: React.FC = () => {
 
       {view === 'login' && (
         <>
-          <VideoUpload setIsLoggedIn={() => setView(null)} />
+          <VideoUpload />
           <button onClick={() => setView(null)} style={{ marginTop: '10px' }}>Back</button>
         </>
       )}

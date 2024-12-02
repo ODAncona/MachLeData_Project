@@ -1,130 +1,89 @@
-// components/VideoUpload.tsx
-/*import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 
-interface VideoUploadProps {
-  setIsLoggedIn: (value: boolean) => void;
-}
+const VideoUpload: React.FC = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [username, setUsername] = useState<string>(''); // User's name
+  const [message, setMessage] = useState('');
+  const [uploading, setUploading] = useState(false);
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ setIsLoggedIn }) => {
-  const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
-  const [isFormValid, setIsFormValid] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    // Validate the form whenever `videoFile` changes
-    if (videoFile && videoFile.type.startsWith('video/')) {
-      setIsFormValid(true);
-      setUploadStatus(null);
-    } else {
-      setIsFormValid(false);
-      if (!videoFile) {
-        setUploadStatus('Error: Please select a video file.');
-      } else if (!videoFile.type.startsWith('video/')) {
-        setUploadStatus('Error: Only video files are allowed.');
-      }
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setMessage('');
     }
-  }, [videoFile]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setVideoFile(file);
   };
 
   const handleUpload = async () => {
-    if (!isFormValid || !videoFile) return;
+    if (!file || !username.trim()) {
+      setMessage('Please select a file and provide a username.');
+      return;
+    }
 
-    setUploadStatus('Uploading...');
-    const formData = new FormData();
-    formData.append('video', videoFile);
+    setUploading(true);
+    setMessage('');
 
     try {
-      const response = await axios.post('/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        maxBodyLength: Infinity, // Allow large payloads
-        maxContentLength: Infinity, // Allow large payloads
+      const uploadUrl = `/api/upload?username=${encodeURIComponent(username)}&fileName=${encodeURIComponent(file.name)}`;
+      console.log('Uploading to', uploadUrl);
+      
+      const response = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: file, // Send the file in the request body
       });
 
-      if (response.data.success) {
-        setUploadStatus('Upload successful!');
-        setIsLoggedIn(true);
-        router.push('/'); // Redirect to Home
+      if (response.ok) {
+        const result = await response.json();
+        setMessage(`Upload successful! Path: ${result.storagePath}`);
       } else {
-        setUploadStatus('Upload failed. Please try again.');
+        const error = await response.json();
+        setMessage(`Upload failed: ${error.error}`);
       }
-    } catch (error) {
-      setUploadStatus('An error occurred during upload. Please try again.');
+    } catch (error: any) {
+      setMessage(`An error occurred: ${error.message}`);
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h2>Upload Video</h2>
-      <input type="file" accept="video/*" onChange={handleFileChange} />
-      <button
-        onClick={handleUpload}
-        disabled={!isFormValid}
+    <div style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
+      <h1>Video Upload</h1>
+      <input 
+        type="text" 
+        placeholder="Enter username" 
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        disabled={uploading}
+        style={{ width: '100%', marginBottom: '10px', padding: '8px' }}
+      />
+      <input 
+        type="file" 
+        accept="image/*,video/*" 
+        onChange={handleFileChange} 
+        disabled={uploading} 
+      />
+      {file && <p>Selected file: {file.name}</p>}
+      <button 
+        onClick={handleUpload} 
+        disabled={!file || !username.trim() || uploading} 
         style={{
           marginTop: '10px',
-          backgroundColor: isFormValid ? '#007bff' : '#ccc',
-          cursor: isFormValid ? 'pointer' : 'not-allowed',
+          padding: '10px',
+          backgroundColor: '#0070f3',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
         }}
       >
-        Upload and Submit
+        {uploading ? 'Uploading...' : 'Upload'}
       </button>
-      {uploadStatus && <p style={{ color: 'red', marginTop: '10px' }}>{uploadStatus}</p>}
+      {message && <p style={{ marginTop: '10px', color: uploading ? 'blue' : 'red' }}>{message}</p>}
     </div>
   );
 };
 
-export default VideoUpload;*/
-
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { useFileUpload } from '@/actions/uploadHook'; // Adjust the path if necessary
-
-function FileUpload() {
-  const [file, setFile] = useState<File | null>(null); // Declare file as File or null type
-  const [status, setStatus] = useState<string>(''); // Status type is a string
-  const fileUpload = useFileUpload(); // Calling the custom hook
-
-  // Type the event parameter to be a ChangeEvent for an input of type 'file'
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFile(event.target.files ? event.target.files[0] : null);
-  };
-
-  // Type the event parameter to be a FormEvent for a form submit
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!file) {
-      setStatus('Please select a file to upload');
-      return;
-    }
-
-    // Start the upload process
-    setStatus('Uploading...');
-    const filename = file.name;
-    const uploadSuccess = await fileUpload(filename, file);
-
-    if (uploadSuccess) {
-      setStatus('File uploaded successfully!');
-    } else {
-      setStatus('Error uploading file');
-    }
-  };
-
-  return (
-    <div>
-      <h1>Upload a Video</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="file" name="file" onChange={handleFileChange} />
-        <button type="submit">Upload</button>
-      </form>
-      {status && <p>{status}</p>}
-    </div>
-  );
-}
-
-export default FileUpload;
+export default VideoUpload;
