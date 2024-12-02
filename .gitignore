@@ -6,10 +6,10 @@ secrets
 
 # data
 tmp
-data
 logs
 *.log
 *.zip
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -179,3 +179,6 @@ mlrunsmodel/preprocessed_data/Yann_Zurbrugg/
 model/lightning_logs/
 mlruns
 pipeline/mlflow/kubernetes/helm/values.yaml
+lightning_logs/
+preprocessed_data/
+pipeline/dags/airflow

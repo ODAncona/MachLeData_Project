@@ -151,7 +151,7 @@ existingConfigmap: ""
 ## @param dags.repositories [array] Array of repositories from which to download DAG files
 ##
 dags:
-  enabled: false
+  enabled: true
   existingConfigmap: ""
   ## E.g:
   ## repositories:
@@ -160,7 +160,11 @@ dags:
   ##     name: my-dags
   ##     path: /
   ##
-  repositories: []
+  repositories:
+  - repository: https://github.com/ODAncona/dagdag
+    branch: main
+    name: dags-repo
+    path: /
   ## @param dags.sshKey SSH Private key used to clone/sync DAGs from Git repositories (ignored if dags.existingSshKeySecret is set)
   ##
   sshKey: ""
@@ -457,10 +461,19 @@ sidecars: []
 initContainers: []
 ## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for all the Airflow pods
 ##
-extraVolumeMounts: []
+extraVolumeMounts: 
+  - name: requirements-volume
+    mountPath: /bitnami/python/requirements.txt
+    subPath: requirements.txt
+
 ## @param extraVolumes Optionally specify extra list of additional volumes for the all the Airflow pods
 ##
-extraVolumes: []
+extraVolumes: 
+  - name: requirements-volume
+    hostPath:
+      path: requirements_airflow.txt
+      type: File
+
 
 ## @section Airflow web parameters
 ##
