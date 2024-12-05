@@ -1,108 +1,106 @@
-// components/Register.tsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 
-const Register: React.FC = () => {
-  const [name, setName] = useState('');
-  const [videoFiles, setVideoFiles] = useState<File[]>([]);
-  const [registerStatus, setRegisterStatus] = useState<string | null>(null);
-  const [isFormValid, setIsFormValid] = useState(false);
-
-  useEffect(() => {
-    if (name && videoFiles.length > 0 && videoFiles.length <= 10) {
-      setIsFormValid(true);
-      setRegisterStatus(null);
-    } else {
-      setIsFormValid(false);
-      if (!name) setRegisterStatus('Error: Please enter your name.');
-      else if (videoFiles.length > 10) setRegisterStatus('Error: You can upload up to 10 videos only.');
-      else if (videoFiles.length === 0) setRegisterStatus('Error: Please select at least one video.');
-    }
-  }, [name, videoFiles]);
+const RegisterPage = () => {
+  const [selectedVideos, setSelectedVideos] = useState<File[]>([]);
+  const [username, setUsername] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files ? Array.from(e.target.files) : [];
-    const validVideos = files.filter((file) => file.type.startsWith('video/')).slice(0, 10);
+    if (e.target.files) {
+      setSelectedVideos(Array.from(e.target.files).slice(0, 10)); // Limit to 10 videos
+    }
+  };
 
-    if (validVideos.length !== files.length) {
-      setRegisterStatus('Error: All files must be valid video files.');
-      setIsFormValid(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!username || selectedVideos.length === 0) {
+      alert('Please fill out all fields and select videos.');
       return;
     }
 
-    setVideoFiles(validVideos);
-  };
+    for (const video of selectedVideos) {
+      const formData = new FormData();
+      formData.append('file', video);
+      formData.append('username', username);
 
-  const handleRegister = async () => {
-    if (!isFormValid) return;
-
-    const formData = new FormData();
-    formData.append('name', name);
-    videoFiles.forEach((video, index) => formData.append(`video_${index + 1}`, video));
-
-    try {
-      const response = await axios.post('/api/register', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
       });
-
-      if (response.data.success) {
-        setRegisterStatus('Registration successful!');
-        setName('');
-        setVideoFiles([]);
-      } else {
-        setRegisterStatus('Registration failed. Please try again.');
-      }
-    } catch (error) {
-      setRegisterStatus('An error occurred during registration.');
     }
+
+    alert('Videos uploaded successfully!');
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h2>Register</h2>
-      <input
-        type="text"
-        placeholder="Enter your name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        style={{
-          marginBottom: '10px',
-          display: 'block',
-          width: '50%', // Smaller width for name input
-          margin: '0 auto',
-        }}
-      />
-      <input
-        type="file"
-        accept="video/*"
-        multiple
-        onChange={handleFileChange}
-        style={{ marginBottom: '10px' }}
-      />
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1>Register and Upload Videos</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="username">Name:</label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter your name"
+          required
+          style={{ display: 'block', marginBottom: '20px', padding: '8px' }}
+        />
+        
+        <hr style={{ border: '1px solid #ccc', marginBottom: '20px' }} />
 
-      {/* Display the list of selected video files */}
-      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-        {videoFiles.map((file, index) => (
-          <li key={index} style={{ textAlign: 'left', maxWidth: '80%', margin: '5px auto' }}>
-            {file.name} {}
-          </li>
-        ))}
-      </ul>
+        <label htmlFor="videos">Select up to 10 videos:</label>
+        <input
+          type="file"
+          id="videos"
+          accept="video/*"
+          multiple
+          onChange={handleFileChange}
+          style={{ display: 'block', marginBottom: '20px' }}
+        />
+        
+        <hr style={{ border: '1px solid #ccc', marginBottom: '20px' }} />
 
-      <button
-        onClick={handleRegister}
-        disabled={!isFormValid}
-        style={{
-          marginTop: '10px',
-          backgroundColor: isFormValid ? '#007bff' : '#ccc',
-          cursor: isFormValid ? 'pointer' : 'not-allowed',
-        }}
-      >
-        Submit Registration
-      </button>
-      {registerStatus && <p style={{ color: 'red', marginTop: '10px' }}>{registerStatus}</p>}
+        <button
+          type="submit"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#007BFF',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          Upload Videos
+        </button>
+      </form>
+
+      {selectedVideos.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Selected Videos:</h3>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '10px',
+            }}
+          >
+            {selectedVideos.map((video, index) => (
+              <div key={index} style={{ textAlign: 'center' }}>
+                <video
+                  src={URL.createObjectURL(video)}
+                  controls
+                  style={{ width: '200px', height: '150px', objectFit: 'cover' }}
+                />
+                <p style={{ marginTop: '5px', fontSize: '12px' }}>{video.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Register;
+export default RegisterPage;
