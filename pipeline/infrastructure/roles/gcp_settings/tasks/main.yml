@@ -12,16 +12,25 @@
     cmd: gcloud projects describe {{ gcp_project_id }}
   register: gcp_project
   failed_when: false
+  changed_when: false
 
 - name: Create GCP project if it doesn't exist
   ansible.builtin.command:
     cmd: gcloud projects create {{ gcp_project_id }}
-  when: gcp_project.rc != 0
+  when: gcp_project.rc != 0 and "already in use" not in gcp_project.stderr
 
-- name: Link billing account
+- name: Check billing account for the project
+  ansible.builtin.command:
+    cmd: gcloud beta billing projects describe {{ gcp_project_id }}
+  register: billing_info
+  changed_when: false
+  failed_when: false
+
+- name: Link billing account to project if not linked
   ansible.builtin.command:
     cmd: gcloud beta billing projects link {{ gcp_project_id }} --billing-account {{ gcp_billing_account_id }}
-  when: gcp_billing_account_id is defined and gcp_project.rc != 0
+  when: gcp_billing_account_id is defined and
+    billing_info.stdout.find('billingAccountName') == -1
 
 - name: Ensure service account exists
   ansible.builtin.command:
@@ -39,4 +48,3 @@
     cmd: gcloud components install gke-gcloud-auth-plugin --quiet
   args:
     creates: /usr/lib/google-cloud-sdk/bin/gke-gcloud-auth-plugin
-
