@@ -9,3 +9,5 @@ créer une variable IP_MLFLOW=34.65.82.22
 Copier le dag dans le répertoire ~/airflow/dags/mydag.py
 lancer le dag
 vérifier sur mlflow qu'il a bien tourné
+
+dvc remote add -d gcs_remote gcs://$GCP_BUCKET_LOCATION/dvc-store -f
