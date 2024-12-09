@@ -474,7 +474,7 @@ tracking:
       command:
         - "/cloud_sql_proxy"
       args:
-        - "-instances=machledata-project:europe-west6:machledata-postgre=tcp:5432"
+        - "-instances=machledata-project-v2:europe-west6:machledata-postgre=tcp:5432"
         - "-credential_file=/secrets/cloudsql/credentials.json"
       volumeMounts:
         - name: cloudsql-instance-credentials
@@ -1361,10 +1361,10 @@ externalDatabase:
   dialectDriver: "postgresql"
   host: "localhost"
   port: 5432
-  user: "dbuser"                    
-  password: "postgres"            
-  database: "mlflow"              
-  authDatabase: ""                  
+  user: "dbuser"
+  password: "postgres"
+  database: "mlflow"
+  authDatabase: ""
   existingSecret: "cloudsql-db-credentials"
   existingSecretPasswordKey: "DB_PASSWORD"
 
@@ -1451,9 +1451,8 @@ externalS3:
 
 externalGCS:
   bucket: "bucket-tracking-server2"
-  googleCloudProject: "machledata-project"
+  googleCloudProject: "machledata-project-v2"
   useCredentialsInSecret: true
   existingSecret: "gcs-credentials"
   existingSecretKey: "credentials.json"
   serveArtifacts: true
-
