@@ -161,10 +161,10 @@ dags:
   ##     path: /
   ##
   repositories:
-  - repository: https://github.com/ODAncona/dagdag
-    branch: main
-    name: dags-repo
-    path: /
+    - repository: https://github.com/ODAncona/dagdag
+      branch: main
+      name: dags-repo
+      path: /
   ## @param dags.sshKey SSH Private key used to clone/sync DAGs from Git repositories (ignored if dags.existingSshKeySecret is set)
   ##
   sshKey: ""
@@ -461,19 +461,18 @@ sidecars: []
 initContainers: []
 ## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for all the Airflow pods
 ##
-extraVolumeMounts: 
+extraVolumeMounts:
   - name: requirements-volume
     mountPath: /bitnami/python/requirements.txt
     subPath: requirements.txt
 
 ## @param extraVolumes Optionally specify extra list of additional volumes for the all the Airflow pods
 ##
-extraVolumes: 
+extraVolumes:
   - name: requirements-volume
     hostPath:
       path: requirements_airflow.txt
       type: File
-
 
 ## @section Airflow web parameters
 ##
@@ -2380,10 +2379,10 @@ ldap:
   binddn: "cn=admin,dc=example,dc=org"
   bindpw: ""
   existingSecret: ""
-  userRegistration: 'True'
+  userRegistration: "True"
   userRegistrationRole: "Public"
   rolesMapping: '{ "cn=All,ou=Groups,dc=example,dc=org": ["User"], "cn=Admins,ou=Groups,dc=example,dc=org": ["Admin"], }'
-  rolesSyncAtLogin: 'True'
+  rolesSyncAtLogin: "True"
   ## SSL/TLS parameters for LDAP
   ## @param ldap.tls.enabled Enabled TLS/SSL for LDAP, you must include the CA file.
   ## @param ldap.tls.allowSelfSigned Allow to use self signed certificates

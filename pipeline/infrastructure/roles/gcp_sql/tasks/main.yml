@@ -2,6 +2,12 @@
   ansible.builtin.command:
     cmd: gcloud projects add-iam-policy-binding {{ gcp_project_id }} --member "serviceAccount:{{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com" --role "roles/cloudsql.client"
 
+- name: Ensure Cloud SQL Admin API is enabled
+  ansible.builtin.command:
+    cmd: gcloud services enable sqladmin.googleapis.com --project {{ gcp_project_id }}
+  register: enable_sql_api
+  changed_when: "'operation' in enable_sql_api.stdout"
+
 - name: Create service account key if not present
   ansible.builtin.command:
     cmd: gcloud iam service-accounts keys create {{ cloudsql_sa_key_file }} --iam-account {{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com
