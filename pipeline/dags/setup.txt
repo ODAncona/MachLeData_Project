@@ -1,0 +1,13 @@
+python -m venv airflow
+source airflow/bin/activate
+pip install -r requirements.txt
+pip install apache-airflow
+export AIRFLOW_HOME=~/airflow
+airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin
+airflow standalone
+créer une variable IP_MLFLOW=34.65.82.22
+Copier le dag dans le répertoire ~/airflow/dags/mydag.py
+lancer le dag
+vérifier sur mlflow qu'il a bien tourné
+
+dvc remote add -d gcs_remote gcs://$GCP_BUCKET_LOCATION/dvc-store -f

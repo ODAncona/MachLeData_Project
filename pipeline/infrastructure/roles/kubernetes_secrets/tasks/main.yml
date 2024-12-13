@@ -1,0 +1,59 @@
+- name: Ensure Kubernetes secret for GCS credentials exists
+  ansible.builtin.command:
+    cmd: kubectl get secret gcs-credentials --namespace {{ k8s_namespace }}
+  register: gcs_secret
+  failed_when: gcs_secret.rc != 0 and "NotFound" not in gcs_secret.stderr
+  ignore_errors: true
+
+- name: Create Kubernetes secret for GCS credentials if not exists
+  ansible.builtin.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gcs-credentials
+        namespace: "{{ k8s_namespace }}"
+      type: Opaque
+      data:
+        credentials.json: "{{ lookup('file', '~/.config/gcloud/application_default_credentials.json') | b64encode }}"
+  when: gcs_secret.rc != 0
+
+- name: Ensure Kubernetes secret for Cloud SQL Auth proxy exists
+  ansible.builtin.command:
+    cmd: kubectl get secret {{ cloudsql_k8s_secret_name }} --namespace {{ k8s_namespace }}
+  register: cloudsql_secret
+  failed_when: cloudsql_secret.rc != 0 and "NotFound" not in cloudsql_secret.stderr
+  ignore_errors: true
+
+- name: Create Kubernetes secret for Cloud SQL Auth proxy if not exists
+  ansible.builtin.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ cloudsql_k8s_secret_name }}"
+        namespace: "{{ k8s_namespace }}"
+      type: Opaque
+      data:
+        credentials.json: "{{ lookup('file', cloudsql_sa_key_file) | b64encode }}"
+  when: cloudsql_secret.rc != 0
+
+- name: Ensure Kubernetes secret for database credentials exists
+  ansible.builtin.command:
+    cmd: kubectl get secret {{ existing_secret }} --namespace {{ k8s_namespace }}
+  register: db_secret
+  failed_when: db_secret.rc != 0 and "NotFound" not in db_secret.stderr
+  ignore_errors: true
+
+- name: Create Kubernetes secret for database credentials if not exists
+  ansible.builtin.k8s:
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ existing_secret }}"
+        namespace: "{{ k8s_namespace }}"
+      type: Opaque
+      data:
+        "DB_PASSWORD": "{{ db_password | b64encode }}"
+  when: db_secret.rc != 0

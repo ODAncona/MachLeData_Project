@@ -1,0 +1,57 @@
+@startmindmap
+<style>
+mindmapDiagram {
+  .mlops {
+    BackgroundColor #ffffff
+  }
+  .data {
+    BackgroundColor #712016
+  }
+  .ml {
+    BackgroundColor #62a954
+  }
+  .dev {
+    BackgroundColor #165179
+  }
+  .ops {
+    BackgroundColor #dfa832
+  }
+}
+</style>
+
++ MLOPS <<mlops>>
+++ Data <<data>>
++++ Data Ingestion and Integration <<data>>
++++ Data Processing and Transformation <<data>>
++++ Data Quality and Validation <<data>>
++++ Data Storage and Management <<data>>
++++ Data Security and Compliance <<data>>
++++ Data Preparation for ML <<data>>
++++ Data Orchestration and Pipelines <<data>>
+++ ML <<ml>>
++++ Model Development <<ml>>
++++ Model Optimization <<ml>>
++++ Experimentation and Tracking <<ml>>
++++ Advanced Learning Techniques <<ml>>
++++ Model Interpretability and Ethics <<ml>>
++++ Feature Engineering <<ml>>
+-- Dev <<dev>>
+--- Code Management and Quality <<dev>>
+--- Development Environments <<dev>>
+--- Testing and Validation <<dev>>
+--- Automation and CI/CD <<dev>>
+--- Dependency and Artifact Management <<dev>>
+--- API and Microservices Development <<dev>>
+--- Security and Access Control <<dev>>
+--- Collaboration and Project Management <<dev>>
+-- Ops <<ops>>
+--- Model Deployment and Serving <<ops>>
+--- Workflow Orchestration and Management <<ops>>
+--- Monitoring and Observability <<ops>>
+--- Scalability and Resource Management <<ops>>
+--- Model Lifecycle Management <<ops>>
+--- Production Security and Compliance <<ops>>
+--- Cost and Performance Optimization <<ops>>
+--- Integration and Communication <<ops>>
+
+@endmindmap

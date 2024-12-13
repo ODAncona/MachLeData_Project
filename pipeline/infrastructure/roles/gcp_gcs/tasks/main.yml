@@ -1,0 +1,28 @@
+- name: Grant Storage Admin role to service account
+  ansible.builtin.command:
+    cmd: >
+      gcloud projects add-iam-policy-binding {{ gcp_project_id }}
+      --member "serviceAccount:{{ cloudsql_sa_name }}@{{ gcp_project_id }}.iam.gserviceaccount.com"
+      --role "roles/storage.admin"
+      
+- name: Ensure GCS bucket for tracking exists
+  ansible.builtin.command:
+    cmd: gsutil ls -b gs://{{ gcp_bucket_tracking_name }}
+  register: bucket_tracking_exists
+  failed_when: false
+
+- name: Create GCS bucket for tracking if not exists
+  ansible.builtin.command:
+    cmd: gsutil mb -l {{ gcp_bucket_location }} gs://{{ gcp_bucket_tracking_name }}
+  when: bucket_tracking_exists.rc != 0
+
+- name: Ensure GCS bucket for video storage exists
+  ansible.builtin.command:
+    cmd: gsutil ls -b gs://{{ gcp_bucket_storage_video }}
+  register: bucket_storage_exists
+  failed_when: false
+
+- name: Create GCS bucket for video storage if not exists
+  ansible.builtin.command:
+    cmd: gsutil mb -l {{ gcp_bucket_location }} gs://{{ gcp_bucket_storage_video }}
+  when: bucket_storage_exists.rc != 0

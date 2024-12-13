@@ -6,10 +6,11 @@ secrets
 
 # data
 tmp
-data
 logs
 *.log
 *.zip
+data/
+model/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -175,10 +176,13 @@ cython_debug/
 .kaggle
 data/
 outputs
+mlrunsmodel/preprocessed_data/Yann_Zurbrugg/
+model/lightning_logs/
 mlruns
 pipeline/mlflow/kubernetes/helm/values.yaml
-
 cloudSQL-SA-key.json
 app/video-upload-app/vars.yaml
-myenv
 node_modules
+lightning_logs/
+preprocessed_data/
+pipeline/dags/airflow
